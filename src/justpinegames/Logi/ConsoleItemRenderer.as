@@ -1,20 +1,26 @@
 package justpinegames.Logi 
 {
+	import flash.text.TextFormat;
+	
 	import org.josht.starling.foxhole.controls.List;
 	import org.josht.starling.foxhole.controls.renderers.IListItemRenderer;
-    import org.josht.starling.foxhole.controls.text.BitmapFontTextRenderer;
-    import org.josht.starling.foxhole.core.FoxholeControl;
+	import org.josht.starling.foxhole.controls.text.BitmapFontTextRenderer;
+	import org.josht.starling.foxhole.controls.text.TextFieldTextRenderer;
+	import org.josht.starling.foxhole.core.FoxholeControl;
 	import org.josht.starling.foxhole.text.BitmapFontTextFormat;
 	import org.osflash.signals.ISignal;
 	import org.osflash.signals.Signal;
+	
 	import starling.events.Event;
 	import starling.text.BitmapFont;
 	import starling.textures.TextureSmoothing;
 	
 	internal class ConsoleItemRenderer extends FoxholeControl implements IListItemRenderer
 	{
-		private static var _format:BitmapFontTextFormat = null;
-		private static var _formatHighlight:BitmapFontTextFormat = null;
+		private static var _format:TextFormat = null;
+//		private static var _format:BitmapFontTextFormat = null;
+		private static var _formatHighlight:TextFormat = null;
+//		private static var _formatHighlight:BitmapFontTextFormat = null;
 		
 		private var _onChange:Signal = new Signal(ConsoleItemRenderer);
 		
@@ -23,18 +29,22 @@ package justpinegames.Logi
 		private var _owner:List;
 		private var _isSelected:Boolean;
 		
-		private var _label:BitmapFontTextRenderer;
+		private var _label:TextFieldTextRenderer;
+//		private var _label:BitmapFontTextRenderer;
 		
 		public function ConsoleItemRenderer(labelColor:int, labelColorHighlight:int) 
 		{	
-			_format = _format ? _format : new BitmapFontTextFormat(new BitmapFont(), 16, labelColor);
-			_formatHighlight = _formatHighlight ? _formatHighlight : new BitmapFontTextFormat(new BitmapFont(), 16, labelColorHighlight);
-			_label = new BitmapFontTextRenderer();
+			_format = _format ? _format : new TextFormat( "Arial", 16, labelColor);
+//			_format = _format ? _format : new BitmapFontTextFormat(new BitmapFont(), 16, labelColor);
+			_formatHighlight = _formatHighlight ? _formatHighlight : new TextFormat( "Arial", 16, labelColorHighlight);
+//			_formatHighlight = _formatHighlight ? _formatHighlight : new BitmapFontTextFormat(new BitmapFont(), 16, labelColorHighlight);
+			_label = new TextFieldTextRenderer();
+//			_label = new BitmapFontTextRenderer();
 			_label.addEventListener(Event.ADDED, function(e:Event):void
 			{
 				_label.textFormat = _format;
 			});
-			_label.smoothing = TextureSmoothing.NONE;
+//			_label.smoothing = TextureSmoothing.NONE;
 			this.addChild(_label);
 		}
 		

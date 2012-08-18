@@ -12,7 +12,7 @@ package justpinegames.Logi
 		public var highlightColor:int = 0x999999;
 		public var consoleBackground:int = 0x000000;
 		public var consoleTransparency:Number = 0.7;
-		public var traceEnabled:Boolean = false;
+		public var traceEnabled:Boolean = true;
 		public var hudEnabled:Boolean = true;
 		public var hudMessageFadeOutTime:Number = 0.2;
 		public var hudMessageDisplayTime:Number = 2;

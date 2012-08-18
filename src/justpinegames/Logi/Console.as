@@ -1,20 +1,25 @@
 package justpinegames.Logi
 {
 	import com.gskinner.motion.GTweener;
-	import flash.events.Event;
+	
 	import flash.desktop.Clipboard;
 	import flash.desktop.ClipboardFormats;
+	import flash.events.Event;
+	import flash.text.TextFormat;
 	import flash.utils.getQualifiedClassName;
+	
 	import org.josht.starling.display.Sprite;
 	import org.josht.starling.foxhole.controls.Button;
 	import org.josht.starling.foxhole.controls.List;
-	import org.josht.starling.foxhole.controls.renderers.IListItemRenderer;
 	import org.josht.starling.foxhole.controls.ScrollContainer;
-    import org.josht.starling.foxhole.controls.text.BitmapFontTextRenderer;
-    import org.josht.starling.foxhole.core.FoxholeControl;
+	import org.josht.starling.foxhole.controls.renderers.IListItemRenderer;
+	import org.josht.starling.foxhole.controls.text.BitmapFontTextRenderer;
+	import org.josht.starling.foxhole.controls.text.TextFieldTextRenderer;
+	import org.josht.starling.foxhole.core.FoxholeControl;
 	import org.josht.starling.foxhole.data.ListCollection;
 	import org.josht.starling.foxhole.layout.VerticalLayout;
 	import org.josht.starling.foxhole.text.BitmapFontTextFormat;
+	
 	import starling.core.Starling;
 	import starling.display.Quad;
 	import starling.events.Event;
@@ -31,8 +36,13 @@ package justpinegames.Logi
 		
 		private var _consoleSettings:ConsoleSettings;
 		private var _defaultFont:BitmapFont;
-		private var _format:BitmapFontTextFormat;
-		private var _formatBackground:BitmapFontTextFormat;
+		
+		private var _format:TextFormat;
+//		private var _format:BitmapFontTextFormat;
+		
+		private var _formatBackground:TextFormat;
+//		private var _formatBackground:BitmapFontTextFormat;
+		
 		private var _consoleContainer:Sprite;
 		private var _hudContainer:ScrollContainer;
 		private var _consoleHeight:Number;
@@ -59,9 +69,13 @@ package justpinegames.Logi
 			_data = [];
 			
 			_defaultFont = new BitmapFont();
-			_format = new BitmapFontTextFormat(_defaultFont, 16, _consoleSettings.textColor);
+//			_format = new BitmapFontTextFormat(_defaultFont, 16, _consoleSettings.textColor);
+			_format = new TextFormat( "Arial", 16, _consoleSettings.textColor );
 			_format.letterSpacing = 2;
-			_formatBackground = new BitmapFontTextFormat(_defaultFont, 16, _consoleSettings.textBackgroundColor);
+			
+			
+//			_formatBackground = new BitmapFontTextFormat(_defaultFont, 16, _consoleSettings.textBackgroundColor);
+			_formatBackground = new TextFormat( "Arial", 16, _consoleSettings.textBackgroundColor);
 			_formatBackground.letterSpacing = 2;
 			
 			this.addEventListener(starling.events.Event.ADDED_TO_STAGE, addedToStageHandler);
@@ -259,27 +273,38 @@ package justpinegames.Logi
 			
 			_list.dataProvider.push({label: labelDisplay, data: message});
 			
-			var createLabel:Function = function(text:String, format:BitmapFontTextFormat):BitmapFontTextRenderer
+			//jx: 改用 textfield，支援中文字
+			var createLabel:Function = function(text:String, format:TextFormat):TextFieldTextRenderer
+//			var createLabel:Function = function(text:String, format:BitmapFontTextFormat):BitmapFontTextRenderer
 			{
-				var label:BitmapFontTextRenderer = new BitmapFontTextRenderer();
+				var label:TextFieldTextRenderer = new TextFieldTextRenderer();
 				label.addEventListener(starling.events.Event.ADDED, function(e:starling.events.Event):void
 				{
 					label.textFormat = format;
 				});
-				label.smoothing = TextureSmoothing.NONE;
 				label.text = text;
 				label.validate();
 				return label;
+				
+				//bitmap font
+//				var label:BitmapFontTextRenderer = new BitmapFontTextRenderer();
+//				label.addEventListener(starling.events.Event.ADDED, function(e:starling.events.Event):void
+//				{
+//					label.textFormat = format;
+//				});
+//				label.smoothing = TextureSmoothing.NONE;
+//				label.text = text;
+//				label.validate();
+//				return label;
 			};
 			
-			//jx
 			var hudLabelContainer:FoxholeControl = new FoxholeControl();
 			hudLabelContainer.width = 640;
 			hudLabelContainer.height = 20;
 			
 			var addBackground:Function = function(offsetX:int, offsetY: int):void 
 			{
-				var hudLabelBackground:BitmapFontTextRenderer = createLabel(message, _formatBackground);
+				var hudLabelBackground:TextFieldTextRenderer = createLabel(message, _formatBackground);
 				hudLabelBackground.x = offsetX;
 				hudLabelBackground.y = offsetY;
 				hudLabelContainer.addChild(hudLabelBackground);
@@ -290,7 +315,7 @@ package justpinegames.Logi
 			addBackground(0, 2);
 			addBackground(2, 2);
 			
-			var hudLabel:BitmapFontTextRenderer = createLabel(message, _format);
+			var hudLabel:TextFieldTextRenderer = createLabel(message, _format);
 			hudLabel.x += 1;
 			hudLabel.y += 1;
 			hudLabelContainer.addChild(hudLabel);
