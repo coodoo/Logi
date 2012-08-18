@@ -11,6 +11,11 @@ package
 	 */
 	public function log(... arguments):void 
 	{
+		//jx: 正式 release 時，可能根本不放 console，因此 log 要判斷，並將訊息轉成 trace
+		//也有可能我不想用 logi，只要用原本的 trace()，也一樣是這裏判斷
+		if( Console.getMainConsoleInstance() == null )
+			trace( arguments );
+		
 		Console.staticLogMessage.apply(this, arguments);
 	}
 }

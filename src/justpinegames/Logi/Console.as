@@ -116,14 +116,15 @@ package justpinegames.Logi
 			_consoleContainer.y = -_consoleHeight;
 			this.addChild(_consoleContainer);
 			
+			//這個是半透明底色
 			_quad = new Quad(this.stage.stageWidth, _consoleHeight, _consoleSettings.consoleBackground);
 			_quad.alpha = _consoleSettings.consoleTransparency;
 			_consoleContainer.addChild(_quad);
 			
 			// TODO Make the list selection work correctly.
 			_list = new List();
-			_list.x = HORIZONTAL_PADDING;
-			_list.y = VERTICAL_PADDING;
+			_list.height;
+			_list.width;
 			_list.dataProvider = new ListCollection(_data);
 			_list.itemRendererFactory = function():IListItemRenderer 
 			{
@@ -185,6 +186,9 @@ package justpinegames.Logi
 			});
 		}
 		
+		/**
+		 * 這個等於 layout()
+		 */
 		private function setScreenSize(width:Number, height:Number):void 
 		{
 			_consoleContainer.width = width;
@@ -192,14 +196,21 @@ package justpinegames.Logi
 			
 			_consoleHeight = height * _consoleSettings.consoleSize;
 			
-			_quad.width = width;
-			_quad.height = _consoleHeight;
 			
 			_copyButton.x = width - 110 - HORIZONTAL_PADDING;
 			_copyButton.y = _consoleHeight - 33 - VERTICAL_PADDING;
 			
-			_list.width = this.stage.stageWidth - HORIZONTAL_PADDING * 2;
+			//list - jx
+			_list.width = 250//this.stage.stageWidth - HORIZONTAL_PADDING * 2;
 			_list.height = _consoleHeight - VERTICAL_PADDING * 2;
+			_list.x = width-_list.width;
+			_list.y = height - _list.height;
+			
+			//底色
+			_quad.width = _list.width;
+			_quad.height = _list.height;
+			_quad.x = _list.x;
+			_quad.y = _list.y;
 			
 			if (!_isShown) 
 			{
@@ -209,8 +220,14 @@ package justpinegames.Logi
 		
 		private function show():void 
 		{
+			//有可能 console 根本不存在
+			if( !this.stage )
+				return;
+			
 			_consoleContainer.visible = true;
 			
+			//jx: 對齊右下角
+//			GTweener.to(_consoleContainer, _consoleSettings.animationTime, { y: height -_consoleContainer.height, alpha: 1 } );
 			GTweener.to(_consoleContainer, _consoleSettings.animationTime, { y: 0, alpha: 1 } );
 			GTweener.to(_hudContainer, _consoleSettings.animationTime, { alpha: 0 } );
 			
@@ -269,7 +286,12 @@ package justpinegames.Logi
 				trace(message);
 			}
 			
-			var labelDisplay: String = (new Date()).toLocaleTimeString() + ": " + message;
+			//jx
+			if( !stage )
+				return;
+			
+//			var labelDisplay: String = (new Date()).toLocaleTimeString() + ": " + message;
+			var labelDisplay: String = message;
 			
 			_list.dataProvider.push({label: labelDisplay, data: message});
 			
@@ -310,10 +332,10 @@ package justpinegames.Logi
 				hudLabelContainer.addChild(hudLabelBackground);
 			};
 			
-			addBackground(0, 0);
-			addBackground(2, 0);
-			addBackground(0, 2);
-			addBackground(2, 2);
+//			addBackground(0, 0);
+//			addBackground(2, 0);
+//			addBackground(0, 2);
+//			addBackground(2, 2);
 			
 			var hudLabel:TextFieldTextRenderer = createLabel(message, _format);
 			hudLabel.x += 1;
@@ -321,6 +343,10 @@ package justpinegames.Logi
 			hudLabelContainer.addChild(hudLabel);
 			
 			_hudContainer.addChildAt(hudLabelContainer, 0);
+			
+			//jx: 放到右下角
+//			hudLabelContainer.x = width-hudLabelContainer.width;
+//			hudLabelContainer.y = height-hudLabelContainer.height
 			
 			GTweener.to(hudLabelContainer, _consoleSettings.hudMessageFadeOutTime, { alpha: 0 }, { delay: _consoleSettings.hudMessageDisplayTime } ).onComplete = function():void
 			{
@@ -381,7 +407,7 @@ package justpinegames.Logi
 				}
 			}
 			
-			if (Console.getMainConsoleInstance() == null) 
+			if (Console.getMainConsoleInstance() == null ) 
 			{
 				_archiveOfUndisplayedLogs.push(message);
 			}
