@@ -272,6 +272,7 @@ package justpinegames.Logi
 				return label;
 			};
 			
+			//jx
 			var hudLabelContainer:FoxholeControl = new FoxholeControl();
 			hudLabelContainer.width = 640;
 			hudLabelContainer.height = 20;
