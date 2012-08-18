@@ -6,7 +6,7 @@ package justpinegames.Logi
 	public class ConsoleSettings 
 	{
 		public var animationTime:Number = 0.2;
-		public var consoleSize:Number = 0.33;
+		public var consoleSize:Number = 0.22;	//數字越大，console 框越高
 		public var textColor:int = 0xFFFFFF//0xdddddd;
 		public var textBackgroundColor:int = 0x555555;
 		public var highlightColor:int = 0x999999;

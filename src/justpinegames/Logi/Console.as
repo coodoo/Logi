@@ -5,15 +5,20 @@ package justpinegames.Logi
 	import flash.desktop.Clipboard;
 	import flash.desktop.ClipboardFormats;
 	import flash.events.Event;
+	import flash.geom.Point;
 	import flash.text.TextFormat;
 	import flash.utils.getQualifiedClassName;
+	import flash.utils.setTimeout;
 	
+	import org.gestouch.core.GestureState;
+	import org.gestouch.events.LongPressGestureEvent;
+	import org.gestouch.gestures.Gesture;
+	import org.gestouch.gestures.LongPressGesture;
 	import org.josht.starling.display.Sprite;
 	import org.josht.starling.foxhole.controls.Button;
 	import org.josht.starling.foxhole.controls.List;
 	import org.josht.starling.foxhole.controls.ScrollContainer;
 	import org.josht.starling.foxhole.controls.renderers.IListItemRenderer;
-	import org.josht.starling.foxhole.controls.text.BitmapFontTextRenderer;
 	import org.josht.starling.foxhole.controls.text.TextFieldTextRenderer;
 	import org.josht.starling.foxhole.core.FoxholeControl;
 	import org.josht.starling.foxhole.data.ListCollection;
@@ -21,6 +26,7 @@ package justpinegames.Logi
 	import org.josht.starling.foxhole.text.BitmapFontTextFormat;
 	
 	import starling.core.Starling;
+	import starling.display.DisplayObject;
 	import starling.display.Quad;
 	import starling.events.Event;
 	import starling.text.BitmapFont;
@@ -105,8 +111,56 @@ package justpinegames.Logi
 			}
 		}
 		
+		private var downPoint:Point;
+		
+		private function longPressHandler( evt:LongPressGestureEvent ):void
+		{
+			//這樣可取得 gesture 物件
+			var aGesture:Gesture = evt.target as Gesture;
+			var xMove:Number;
+			var yMove:Number;
+			if( aGesture.state == GestureState.BEGAN )
+			{
+				downPoint = aGesture.location;
+				
+				flash();
+			}
+			else if( aGesture.state == GestureState.CHANGED )
+			{
+				xMove = aGesture.location.x - downPoint.x;
+				yMove = aGesture.location.y - downPoint.y;
+				
+				downPoint = aGesture.location;
+				this.x += xMove;
+				this.y += yMove;
+			}
+			else if( aGesture.state == GestureState.ENDED )
+			{
+				downPoint = null;
+			}
+			
+			//trace("\ngesture - ", aGesture.state, aGesture.location );
+			
+			//再下一層可取得目前操作的元件
+//			var list:List = evt.target.target as List;
+		}
+		
+		/**
+		 * long press 成功時，閃一下提供視覺提示
+		 */
+		private function flash( b:Boolean = false ):void
+		{
+			this.alpha = b ? 1.0 : 0.1;
+			
+			setTimeout( flash, 30, true );
+		}
+		
 		private function addedToStageHandler(e:starling.events.Event):void
 		{
+			var longTap:LongPressGesture = new LongPressGesture( this );
+			longTap.addEventListener(LongPressGestureEvent.GESTURE_LONG_PRESS, longPressHandler, false, 0, true );
+			
+			//
 			_consoleHeight = this.stage.stageHeight * _consoleSettings.consoleSize;
 			
 			_isShown = false;
@@ -123,8 +177,6 @@ package justpinegames.Logi
 			
 			// TODO Make the list selection work correctly.
 			_list = new List();
-			_list.height;
-			_list.width;
 			_list.dataProvider = new ListCollection(_data);
 			_list.itemRendererFactory = function():IListItemRenderer 
 			{
@@ -138,7 +190,7 @@ package justpinegames.Logi
 			
 			_copyButton = new Button();
 
-			_copyButton.label = "Copy All";
+			_copyButton.label = "copy";
 			_copyButton.addEventListener(starling.events.Event.ADDED, function(e:starling.events.Event):void
 			{
                 _copyButton.defaultLabelProperties.smoothing = TextureSmoothing.NONE;
@@ -152,8 +204,8 @@ package justpinegames.Logi
                     return null;
                 };
 
-				_copyButton.width = 150;
-				_copyButton.height = 40;
+				_copyButton.width = 60;
+				_copyButton.height = 20;
 			});
 			_copyButton.onPress.add(copy);
 			_consoleContainer.addChild(_copyButton);
@@ -194,15 +246,12 @@ package justpinegames.Logi
 			_consoleContainer.width = width;
 			_consoleContainer.height = height;
 			
-			_consoleHeight = height * _consoleSettings.consoleSize;
+			//_consoleHeight = height * _consoleSettings.consoleSize;
 			
-			
-			_copyButton.x = width - 110 - HORIZONTAL_PADDING;
-			_copyButton.y = _consoleHeight - 33 - VERTICAL_PADDING;
 			
 			//list - jx
-			_list.width = 250//this.stage.stageWidth - HORIZONTAL_PADDING * 2;
-			_list.height = _consoleHeight - VERTICAL_PADDING * 2;
+			_list.width = 400//this.stage.stageWidth - HORIZONTAL_PADDING * 2;
+			_list.height = 150;//_consoleHeight - VERTICAL_PADDING * 2;
 			_list.x = width-_list.width;
 			_list.y = height - _list.height;
 			
@@ -211,6 +260,9 @@ package justpinegames.Logi
 			_quad.height = _list.height;
 			_quad.x = _list.x;
 			_quad.y = _list.y;
+			
+			_copyButton.x = _list.x + _list.width - _copyButton.width - 4;
+			_copyButton.y = _list.y + 2;
 			
 			if (!_isShown) 
 			{
@@ -274,6 +326,9 @@ package justpinegames.Logi
 			Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, text);
 		}
 		
+		//jx: 移掉 msg 裏可能的 \n 之類
+		private const removeSpace:RegExp = /\n|\t|\r/g;
+		
 		/**
 		 * Displays the message string in the console, or on the HUD if the console is hidden.
 		 * 
@@ -291,7 +346,8 @@ package justpinegames.Logi
 				return;
 			
 //			var labelDisplay: String = (new Date()).toLocaleTimeString() + ": " + message;
-			var labelDisplay: String = message;
+			//jx: 我不要加時間，並且移除 \n 字元
+			var labelDisplay: String = message.replace(removeSpace, "");
 			
 			_list.dataProvider.push({label: labelDisplay, data: message});
 			
@@ -403,7 +459,8 @@ package justpinegames.Logi
 				}
 				else
 				{
-					message += ", " + description;
+					message += " " + description;	//jx- 不想要 ,
+//					message += ", " + description;
 				}
 			}
 			
