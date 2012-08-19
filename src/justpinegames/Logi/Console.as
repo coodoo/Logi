@@ -273,15 +273,17 @@ package justpinegames.Logi
 		private function show():void 
 		{
 			//有可能 console 根本不存在
-			if( !this.stage )
-				return;
+			try{
+				
 			
-			_consoleContainer.visible = true;
-			
-			//jx: 對齊右下角
-//			GTweener.to(_consoleContainer, _consoleSettings.animationTime, { y: height -_consoleContainer.height, alpha: 1 } );
-			GTweener.to(_consoleContainer, _consoleSettings.animationTime, { y: 0, alpha: 1 } );
+				_consoleContainer.visible = true;
+				
+				//jx: 對齊右下角
+	//			GTweener.to(_consoleContainer, _consoleSettings.animationTime, { y: height -_consoleContainer.height, alpha: 1 } );
+				GTweener.to(_consoleContainer, _consoleSettings.animationTime, { y: 0, alpha: 1 } );
 			GTweener.to(_hudContainer, _consoleSettings.animationTime, { alpha: 0 } );
+
+			}catch(e:Error){}
 			
 			_isShown = true;
 		}
