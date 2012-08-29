@@ -17,16 +17,13 @@ package justpinegames.Logi
 	import org.josht.starling.display.Sprite;
 	import org.josht.starling.foxhole.controls.Button;
 	import org.josht.starling.foxhole.controls.List;
-	import org.josht.starling.foxhole.controls.ScrollContainer;
 	import org.josht.starling.foxhole.controls.renderers.IListItemRenderer;
 	import org.josht.starling.foxhole.controls.text.TextFieldTextRenderer;
 	import org.josht.starling.foxhole.core.FoxholeControl;
 	import org.josht.starling.foxhole.data.ListCollection;
-	import org.josht.starling.foxhole.layout.VerticalLayout;
 	import org.josht.starling.foxhole.text.BitmapFontTextFormat;
 	
 	import starling.core.Starling;
-	import starling.display.DisplayObject;
 	import starling.display.Quad;
 	import starling.events.Event;
 	import starling.text.BitmapFont;
@@ -50,13 +47,13 @@ package justpinegames.Logi
 //		private var _formatBackground:BitmapFontTextFormat;
 		
 		private var _consoleContainer:Sprite;
-		private var _hudContainer:ScrollContainer;
+//		private var _hudContainer:ScrollContainer;
 		private var _consoleHeight:Number;
 		private var _isShown:Boolean;
-		private var _copyButton:Button;
+		private var copyButton:Button;
 		private var _data:Array;
-		private var _quad:Quad;
-		private var _list:List;
+		private var quad:Quad;
+		private var list:List;
 		
 		private const VERTICAL_PADDING: Number = 5;
 		private const HORIZONTAL_PADDING: Number = 5;
@@ -155,6 +152,9 @@ package justpinegames.Logi
 			setTimeout( flash, 30, true );
 		}
 		
+		/**
+		 * 進入點
+		 */
 		private function addedToStageHandler(e:starling.events.Event):void
 		{
 			var longTap:LongPressGesture = new LongPressGesture( this );
@@ -165,64 +165,56 @@ package justpinegames.Logi
 			
 			_isShown = false;
 			
+			//ok
 			_consoleContainer = new FoxholeControl();
 			_consoleContainer.alpha = 0;
 			_consoleContainer.y = -_consoleHeight;
 			this.addChild(_consoleContainer);
 			
 			//這個是半透明底色
-			_quad = new Quad(this.stage.stageWidth, _consoleHeight, _consoleSettings.consoleBackground);
-			_quad.alpha = _consoleSettings.consoleTransparency;
-			_consoleContainer.addChild(_quad);
+			quad = new Quad(this.stage.stageWidth, _consoleHeight, _consoleSettings.consoleBackground);
+			quad.alpha = _consoleSettings.consoleTransparency;
+			_consoleContainer.addChild(quad);
 			
-			// TODO Make the list selection work correctly.
-			_list = new List();
-			_list.dataProvider = new ListCollection(_data);
-			_list.itemRendererFactory = function():IListItemRenderer 
+			//List
+			list = new List();
+			list.name = "fuck";
+			list.scrollerProperties.horizontalScrollPolicy = "off";
+			list.dataProvider = new ListCollection(_data);
+			list.itemRendererFactory = function():IListItemRenderer 
 			{
 				var consoleItemRenderer:ConsoleItemRenderer = new ConsoleItemRenderer(_consoleSettings.textColor, _consoleSettings.highlightColor);
-				consoleItemRenderer.width = _list.width;
+				consoleItemRenderer.width = list.width;
 				consoleItemRenderer.height = 20;
 				return consoleItemRenderer; 
 			};
-			_list.onChange.add(copyLine);
-			_consoleContainer.addChild(_list);
 			
-			_copyButton = new Button();
+			_consoleContainer.addChild(list);
+			
+			//button
+			copyButton = new Button();
 
-			_copyButton.label = "copy";
-			_copyButton.addEventListener(starling.events.Event.ADDED, function(e:starling.events.Event):void
+			copyButton.label = "copy";
+			copyButton.addEventListener(starling.events.Event.ADDED, function(e:starling.events.Event):void
 			{
-                _copyButton.defaultLabelProperties.smoothing = TextureSmoothing.NONE;
-                _copyButton.downLabelProperties.smoothing = TextureSmoothing.NONE;
+                copyButton.defaultLabelProperties.smoothing = TextureSmoothing.NONE;
+                copyButton.downLabelProperties.smoothing = TextureSmoothing.NONE;
 
-				_copyButton.defaultLabelProperties.textFormat = new BitmapFontTextFormat(_defaultFont, 16, _consoleSettings.textColor);
-				_copyButton.downLabelProperties.textFormat = new BitmapFontTextFormat(_defaultFont, 16, _consoleSettings.highlightColor);
+				copyButton.defaultLabelProperties.textFormat = new BitmapFontTextFormat(_defaultFont, 16, _consoleSettings.textColor);
+				copyButton.downLabelProperties.textFormat = new BitmapFontTextFormat(_defaultFont, 16, _consoleSettings.highlightColor);
 
-                _copyButton.stateToSkinFunction = function(target:Object, state:Object, oldValue:Object = null):Object
+                copyButton.stateToSkinFunction = function(target:Object, state:Object, oldValue:Object = null):Object
                 {
                     return null;
                 };
 
-				_copyButton.width = 60;
-				_copyButton.height = 20;
+				copyButton.width = 60;
+				copyButton.height = 20;
 			});
-			_copyButton.onPress.add(copy);
-			_consoleContainer.addChild(_copyButton);
+			copyButton.onPress.add(copy);
+			_consoleContainer.addChild(copyButton);
 			
-			_hudContainer = new ScrollContainer();
-			// TODO This should be changed to prevent the hud from even creating, not just making it invisible.
-			if (!_consoleSettings.hudEnabled) 
-			{
-				_hudContainer.visible = false;
-			}
-			_hudContainer.x = HORIZONTAL_PADDING;
-			_hudContainer.y = VERTICAL_PADDING;
-			_hudContainer.touchable = false;
-			_hudContainer.layout = new VerticalLayout();
-			_hudContainer.verticalScrollPolicy = ScrollContainer.SCROLL_POLICY_OFF;
-			this.addChild(_hudContainer);
-			
+			//設定大小
 			this.setScreenSize(Starling.current.nativeStage.stageWidth, Starling.current.nativeStage.stageHeight);
 			
 			for each (var undisplayedMessage:* in _archiveOfUndisplayedLogs) 
@@ -236,6 +228,7 @@ package justpinegames.Logi
 			{
 				setScreenSize(Starling.current.nativeStage.stageWidth, Starling.current.nativeStage.stageHeight);
 			});
+			
 		}
 		
 		/**
@@ -250,19 +243,20 @@ package justpinegames.Logi
 			
 			
 			//list - jx
-			_list.width = 400//this.stage.stageWidth - HORIZONTAL_PADDING * 2;
-			_list.height = 150;//_consoleHeight - VERTICAL_PADDING * 2;
-			_list.x = width-_list.width;
-			_list.y = height - _list.height;
+			list.width = 400//this.stage.stageWidth - HORIZONTAL_PADDING * 2;
+			list.height = 150;//_consoleHeight - VERTICAL_PADDING * 2;
+			list.x = width-list.width;
+			list.y = height - list.height;
+			//list.dataViewPort.setTypicalSize( list.width, 20 );
 			
 			//底色
-			_quad.width = _list.width;
-			_quad.height = _list.height;
-			_quad.x = _list.x;
-			_quad.y = _list.y;
+			quad.width = list.width;
+			quad.height = list.height;
+			quad.x = list.x;
+			quad.y = list.y;
 			
-			_copyButton.x = _list.x + _list.width - _copyButton.width - 4;
-			_copyButton.y = _list.y + 2;
+			copyButton.x = list.x + list.width - copyButton.width - 4;
+			copyButton.y = list.y + 2;
 			
 			if (!_isShown) 
 			{
@@ -274,14 +268,11 @@ package justpinegames.Logi
 		{
 			//有可能 console 根本不存在
 			try{
-				
-			
 				_consoleContainer.visible = true;
 				
 				//jx: 對齊右下角
 	//			GTweener.to(_consoleContainer, _consoleSettings.animationTime, { y: height -_consoleContainer.height, alpha: 1 } );
 				GTweener.to(_consoleContainer, _consoleSettings.animationTime, { y: 0, alpha: 1 } );
-			GTweener.to(_hudContainer, _consoleSettings.animationTime, { alpha: 0 } );
 
 			}catch(e:Error){}
 			
@@ -295,15 +286,13 @@ package justpinegames.Logi
 				_consoleContainer.visible = false;	
 			};
 			
-			GTweener.to(_hudContainer, _consoleSettings.animationTime, { alpha: 1 } );
-			
 			_isShown = false;
 		}
 		
-		private function copyLine(list:List):void
-		{
-			//log(list.selectedItem.data);
-		}
+//		private function copyLine(list:List):void
+//		{
+//			//Logi.log(list.selectedItem.data);
+//		}
 		
 		/**
 		 * You can use this data to save a log to the file.
@@ -338,6 +327,7 @@ package justpinegames.Logi
 		 */
 		public function logMessage(message:String):void 
 		{
+			
 			if (_consoleSettings.traceEnabled)
 			{
 				trace(message);
@@ -349,9 +339,9 @@ package justpinegames.Logi
 			
 //			var labelDisplay: String = (new Date()).toLocaleTimeString() + ": " + message;
 			//jx: 我不要加時間，並且移除 \n 字元
-			var labelDisplay: String = message.replace(removeSpace, "");
+			var stringToDisplay: String = message.replace(removeSpace, "");
 			
-			_list.dataProvider.push({label: labelDisplay, data: message});
+			list.dataProvider.push({label: stringToDisplay, data: message});
 			
 			//jx: 改用 textfield，支援中文字
 			var createLabel:Function = function(text:String, format:TextFormat):TextFieldTextRenderer
@@ -365,54 +355,10 @@ package justpinegames.Logi
 				label.text = text;
 				label.validate();
 				return label;
-				
-				//bitmap font
-//				var label:BitmapFontTextRenderer = new BitmapFontTextRenderer();
-//				label.addEventListener(starling.events.Event.ADDED, function(e:starling.events.Event):void
-//				{
-//					label.textFormat = format;
-//				});
-//				label.smoothing = TextureSmoothing.NONE;
-//				label.text = text;
-//				label.validate();
-//				return label;
 			};
 			
-			var hudLabelContainer:FoxholeControl = new FoxholeControl();
-			hudLabelContainer.width = 640;
-			hudLabelContainer.height = 20;
-			
-			var addBackground:Function = function(offsetX:int, offsetY: int):void 
-			{
-				var hudLabelBackground:TextFieldTextRenderer = createLabel(message, _formatBackground);
-				hudLabelBackground.x = offsetX;
-				hudLabelBackground.y = offsetY;
-				hudLabelContainer.addChild(hudLabelBackground);
-			};
-			
-//			addBackground(0, 0);
-//			addBackground(2, 0);
-//			addBackground(0, 2);
-//			addBackground(2, 2);
-			
-			var hudLabel:TextFieldTextRenderer = createLabel(message, _format);
-			hudLabel.x += 1;
-			hudLabel.y += 1;
-			hudLabelContainer.addChild(hudLabel);
-			
-			_hudContainer.addChildAt(hudLabelContainer, 0);
-			
-			//jx: 放到右下角
-//			hudLabelContainer.x = width-hudLabelContainer.width;
-//			hudLabelContainer.y = height-hudLabelContainer.height
-			
-			GTweener.to(hudLabelContainer, _consoleSettings.hudMessageFadeOutTime, { alpha: 0 }, { delay: _consoleSettings.hudMessageDisplayTime } ).onComplete = function():void
-			{
-				_hudContainer.removeChild(hudLabelContainer);
-			};
-				
-			// TODO use the correct API, currently there is a problem with List max vertical position. A bug in foxhole?
-			_list.verticalScrollPosition = _list.dataProvider.length * 20;
+			//捲到最下面
+			list.verticalScrollPosition = list.maxVerticalScrollPosition;
 		}
 		
 		/**

@@ -28,8 +28,8 @@ import starling.display.Sprite;
 		
 		private function addedToStageHandler(event:starling.events.Event):void
 		{			
-			log(Starling.current.context.driverInfo);
-			log("Logi wants to say Hello!");
+			Logi.log(Starling.current.context.driverInfo);
+			Logi.log("Logi wants to say Hello!");
 
 			// Create Logi console
 			var console:Console = new Console();
@@ -98,13 +98,13 @@ import starling.display.Sprite;
 			var touchMoved:Touch = e.getTouch(this, TouchPhase.MOVED);
 			if (touchMoved)
 			{
-				log("Moved: " + touchMoved.globalX, touchMoved.globalY);
+				Logi.log("Moved: " + touchMoved.globalX, touchMoved.globalY);
 			}
 			
 			var touchBegan:Touch = e.getTouch(this, TouchPhase.BEGAN);
 			if (touchBegan)
 			{
-				log("Clicked: " + touchBegan.globalX, touchBegan.globalY);
+				Logi.log("Clicked: " + touchBegan.globalX, touchBegan.globalY);
 			}
 		}
 	}
