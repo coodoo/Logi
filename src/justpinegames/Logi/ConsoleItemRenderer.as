@@ -2,20 +2,17 @@ package justpinegames.Logi
 {
 	import flash.text.TextFormat;
 	
-	import org.josht.starling.foxhole.controls.List;
-	import org.josht.starling.foxhole.controls.renderers.IListItemRenderer;
-	import org.josht.starling.foxhole.controls.text.BitmapFontTextRenderer;
-	import org.josht.starling.foxhole.controls.text.TextFieldTextRenderer;
-	import org.josht.starling.foxhole.core.FoxholeControl;
-	import org.josht.starling.foxhole.text.BitmapFontTextFormat;
+	import feathers.controls.List;
+	import feathers.controls.renderers.IListItemRenderer;
+	import feathers.controls.text.TextFieldTextRenderer;
+	import feathers.core.FeathersControl;
+	
 	import org.osflash.signals.ISignal;
 	import org.osflash.signals.Signal;
 	
 	import starling.events.Event;
-	import starling.text.BitmapFont;
-	import starling.textures.TextureSmoothing;
 	
-	internal class ConsoleItemRenderer extends FoxholeControl implements IListItemRenderer
+	internal class ConsoleItemRenderer extends FeathersControl implements IListItemRenderer
 	{
 		private static var _format:TextFormat = null;
 //		private static var _format:BitmapFontTextFormat = null;

@@ -10,18 +10,19 @@ package justpinegames.Logi
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.setTimeout;
 	
+	import feathers.controls.Button;
+	import feathers.controls.List;
+	import feathers.controls.renderers.IListItemRenderer;
+	import feathers.controls.text.TextFieldTextRenderer;
+	import feathers.core.FeathersControl;
+	import feathers.data.ListCollection;
+	import feathers.display.Sprite;
+	import feathers.text.BitmapFontTextFormat;
+	
 	import org.gestouch.core.GestureState;
-	import org.gestouch.events.LongPressGestureEvent;
+	import org.gestouch.events.GestureEvent;
 	import org.gestouch.gestures.Gesture;
 	import org.gestouch.gestures.LongPressGesture;
-	import org.josht.starling.display.Sprite;
-	import org.josht.starling.foxhole.controls.Button;
-	import org.josht.starling.foxhole.controls.List;
-	import org.josht.starling.foxhole.controls.renderers.IListItemRenderer;
-	import org.josht.starling.foxhole.controls.text.TextFieldTextRenderer;
-	import org.josht.starling.foxhole.core.FoxholeControl;
-	import org.josht.starling.foxhole.data.ListCollection;
-	import org.josht.starling.foxhole.text.BitmapFontTextFormat;
 	
 	import starling.core.Starling;
 	import starling.display.Quad;
@@ -110,7 +111,10 @@ package justpinegames.Logi
 		
 		private var downPoint:Point;
 		
-		private function longPressHandler( evt:LongPressGestureEvent ):void
+		/**
+		 * TODO: Gestouch 升級後這個 long press 可能要改寫
+		 */
+		private function longPressHandler( evt:GestureEvent ):void
 		{
 			//這樣可取得 gesture 物件
 			var aGesture:Gesture = evt.target as Gesture;
@@ -158,7 +162,7 @@ package justpinegames.Logi
 		private function addedToStageHandler(e:starling.events.Event):void
 		{
 			var longTap:LongPressGesture = new LongPressGesture( this );
-			longTap.addEventListener(LongPressGestureEvent.GESTURE_LONG_PRESS, longPressHandler, false, 0, true );
+			longTap.addEventListener(GestureEvent.GESTURE_RECOGNIZED, longPressHandler, false, 0, true );
 			
 			//
 			_consoleHeight = this.stage.stageHeight * _consoleSettings.consoleSize;
@@ -166,7 +170,7 @@ package justpinegames.Logi
 			_isShown = false;
 			
 			//ok
-			_consoleContainer = new FoxholeControl();
+			_consoleContainer = new FeathersControl();
 			_consoleContainer.alpha = 0;
 			_consoleContainer.y = -_consoleHeight;
 			this.addChild(_consoleContainer);
@@ -291,7 +295,7 @@ package justpinegames.Logi
 		
 //		private function copyLine(list:List):void
 //		{
-//			//Logi.log(list.selectedItem.data);
+//			//log(list.selectedItem.data);
 //		}
 		
 		/**
